@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "573057856554",
+    "project_id": "fir-kasir-a96f4",
+    "storage_bucket": "fir-kasir-a96f4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:573057856554:android:116822efb4453e53147f53",
+        "android_client_info": {
+          "package_name": "com.coffee.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD37UElGBS4EwX6_zLLVF26TyMtQ17_J4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
