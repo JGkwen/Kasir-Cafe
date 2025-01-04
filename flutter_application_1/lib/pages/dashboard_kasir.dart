@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:coffee_shop_kasir/components/order_details.dart';
 import 'package:coffee_shop_kasir/services/database_service.dart';
 import '../models/product.dart';
-import 'payment_page.dart';
 import 'package:go_router/go_router.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class KasirDashboard extends StatefulWidget {
+  const KasirDashboard({super.key});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<KasirDashboard> createState() => _CashierDashboardState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _CashierDashboardState extends State<KasirDashboard> {
   List<String> category = ['coffee', 'non-coffee', 'food', 'snack'];
   List<menus> products = [];
   List<menus> filteredProducts = [];
@@ -38,19 +38,9 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    try {
-      GoRouter.of(context).go('/login');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saat logout: $e')),
-      );
-    }
-  }
-
   void addToCart(menus product) {
     setState(() {
-      cart.add({'product': product, 'quantity': 1});
+      cart.add({'product': product, 'quantity': 1, 'notes': ''});
     });
   }
 
@@ -59,21 +49,25 @@ class _MainPageState extends State<MainPage> {
         0, (total, item) => total + (item['product'].price * item['quantity']));
   }
 
+  void logout(BuildContext context) {
+    GoRouter.of(context).go('/login');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Myth Cafe'),
+        title: const Text('Myth Cafe - Kasir'),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context), // Panggil fungsi logout
+            onPressed: () => logout(context),
           ),
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(70),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -187,148 +181,28 @@ class _MainPageState extends State<MainPage> {
             child: Container(
               padding: const EdgeInsets.all(16),
               color: Colors.orange[50],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Detail Pesanan',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cart.length,
-                      itemBuilder: (context, index) {
-                        final item = cart[index];
-                        return ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item['product'].name),
-                              Text(
-                                'Rp ${item['product'].price}',
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                              if (item['notes'] != null &&
-                                  item['notes'].isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
-                                  child: Text(
-                                    'Catatan: ${item['notes']}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle),
-                                onPressed: () {
-                                  setState(() {
-                                    if (item['quantity'] > 1) {
-                                      item['quantity'] -= 1;
-                                    } else {
-                                      cart.removeAt(index);
-                                    }
-                                  });
-                                },
-                              ),
-                              Text('${item['quantity']}'),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle),
-                                onPressed: () {
-                                  setState(() {
-                                    item['quantity'] += 1;
-                                  });
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.note_add,
-                                    color: Colors.grey),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      TextEditingController notesController =
-                                          TextEditingController(
-                                              text: item['notes']);
-                                      return AlertDialog(
-                                        title: const Text('Tambah Catatan'),
-                                        content: TextField(
-                                          controller: notesController,
-                                          decoration: const InputDecoration(
-                                            hintText: 'Masukkan catatan',
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Batal'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                item['notes'] =
-                                                    notesController.text;
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Simpan'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Rp ${getTotalPrice().toStringAsFixed(0)}',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PaymentPage(
-                            cart: cart, // Kirim data pesanan
-                            totalPrice: getTotalPrice(), // Kirim total harga
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text('Lanjut ke Pembayaran'),
-                  ),
-                ],
+              child: OrderDetails(
+                cart: cart,
+                totalPrice: getTotalPrice(),
+                onUpdateQuantity: (index, quantity) {
+                  setState(() {
+                    if (quantity > 0) {
+                      cart[index]['quantity'] = quantity;
+                    } else {
+                      cart.removeAt(index);
+                    }
+                  });
+                },
+                onRemoveItem: (index) {
+                  setState(() {
+                    cart.removeAt(index);
+                  });
+                },
+                onAddNotes: (index, notes) {
+                  setState(() {
+                    cart[index]['notes'] = notes;
+                  });
+                },
               ),
             ),
           ),

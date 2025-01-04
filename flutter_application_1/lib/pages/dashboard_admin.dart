@@ -1,8 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:coffee_shop_kasir/pages/add_page.dart';
+import 'package:coffee_shop_kasir/pages/update_page.dart';
+import 'package:coffee_shop_kasir/pages/delete_page.dart';
+import 'package:coffee_shop_kasir/components/order_details.dart';
 import 'package:coffee_shop_kasir/services/database_service.dart';
 import '../models/product.dart';
-import 'payment_page.dart';
 import 'package:go_router/go_router.dart';
 
 class AdminDashboard extends StatefulWidget {
@@ -39,19 +41,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
     }
   }
 
-  Future<void> _logout(BuildContext context) async {
-    try {
-      GoRouter.of(context).go('/login');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saat logout: $e')),
-      );
-    }
-  }
-
   void addToCart(menus product) {
     setState(() {
-      cart.add({'product': product, 'quantity': 1});
+      cart.add({'product': product, 'quantity': 1, 'notes': ''});
     });
   }
 
@@ -60,114 +52,8 @@ class _AdminDashboardState extends State<AdminDashboard> {
         0, (total, item) => total + (item['product'].price * item['quantity']));
   }
 
-  void _openCrudDialog({menus? menuToEdit}) {
-    TextEditingController nameController =
-        TextEditingController(text: menuToEdit?.name ?? '');
-    TextEditingController descriptionController =
-        TextEditingController(text: menuToEdit?.description ?? '');
-    TextEditingController priceController =
-        TextEditingController(text: menuToEdit?.price.toString() ?? '');
-    TextEditingController imageUrlController =
-        TextEditingController(text: menuToEdit?.imageUrl ?? '');
-    String selectedCategory =
-        menuToEdit?.category ?? 'coffee'; // Default category
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(menuToEdit == null ? 'Create Menu' : 'Edit Menu'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Nama Menu'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Deskripsi'),
-                ),
-                TextField(
-                  controller: priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(labelText: 'Harga'),
-                ),
-                TextField(
-                  controller: imageUrlController,
-                  decoration: const InputDecoration(labelText: 'URL Gambar'),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<String>(
-                  value: selectedCategory,
-                  decoration: const InputDecoration(labelText: 'Kategori'),
-                  items: const [
-                    DropdownMenuItem(value: 'coffee', child: Text('Coffee')),
-                    DropdownMenuItem(
-                        value: 'non-coffee', child: Text('Non-Coffee')),
-                    DropdownMenuItem(value: 'food', child: Text('Food')),
-                    DropdownMenuItem(value: 'snack', child: Text('Snack')),
-                  ],
-                  onChanged: (value) {
-                    setState(() {
-                      selectedCategory = value!;
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Batal'),
-            ),
-            TextButton(
-              onPressed: () async {
-                if (nameController.text.isNotEmpty &&
-                    descriptionController.text.isNotEmpty &&
-                    priceController.text.isNotEmpty &&
-                    imageUrlController.text.isNotEmpty &&
-                    selectedCategory.isNotEmpty) {
-                  if (menuToEdit == null) {
-                    await FirebaseFirestore.instance.collection('menus').add({
-                      'name': nameController.text,
-                      'description': descriptionController.text,
-                      'price': double.parse(priceController.text),
-                      'imageUrl': imageUrlController.text,
-                      'category': selectedCategory,
-                    });
-                  } else {
-                    await FirebaseFirestore.instance
-                        .collection('menus')
-                        .doc(menuToEdit.id)
-                        .update({
-                      'name': nameController.text,
-                      'description': descriptionController.text,
-                      'price': double.parse(priceController.text),
-                      'imageUrl': imageUrlController.text,
-                      'category': selectedCategory,
-                    });
-                  }
-                  await _fetchMenus();
-                  Navigator.pop(context);
-                }
-              },
-              child: const Text('Simpan'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _deleteMenu(String menuId) async {
-    try {
-      await FirebaseFirestore.instance.collection('menus').doc(menuId).delete();
-      await _fetchMenus();
-    } catch (e) {
-      print("Error deleting menu: $e");
-    }
+  void logout(BuildContext context) {
+    GoRouter.of(context).go('/login');
   }
 
   @override
@@ -178,65 +64,41 @@ class _AdminDashboardState extends State<AdminDashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await _logout(context);
-            },
+            onPressed: () => logout(context),
           ),
           IconButton(
             icon: const Icon(Icons.add),
-            onPressed: () => _openCrudDialog(),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddPage(onMenuAdded: _fetchMenus)),
+              );
+            },
           ),
           IconButton(
             icon: const Icon(Icons.edit),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Pilih Menu untuk Diedit'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: products.map((menu) {
-                          return ListTile(
-                            title: Text(menu.name),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _openCrudDialog(menuToEdit: menu);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  );
-                },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => UpdatePage(
+                          onMenuUpdated: _fetchMenus,
+                          products: products,
+                        )),
               );
             },
           ),
           IconButton(
             icon: const Icon(Icons.delete),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Pilih Menu untuk Dihapus'),
-                    content: SingleChildScrollView(
-                      child: Column(
-                        children: products.map((menu) {
-                          return ListTile(
-                            title: Text(menu.name),
-                            trailing:
-                                const Icon(Icons.delete, color: Colors.red),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _deleteMenu(menu.id);
-                            },
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  );
-                },
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => DeletePage(
+                          onMenuDeleted: _fetchMenus,
+                          products: products,
+                        )),
               );
             },
           ),
@@ -244,7 +106,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(70),
           child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -358,149 +220,28 @@ class _AdminDashboardState extends State<AdminDashboard> {
             child: Container(
               padding: const EdgeInsets.all(16),
               color: Colors.orange[50],
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'Detail Pesanan',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: cart.length,
-                      itemBuilder: (context, index) {
-                        final item = cart[index];
-                        return ListTile(
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(item['product'].name),
-                              Text(
-                                'Rp ${item['product'].price}',
-                                style: const TextStyle(color: Colors.grey),
-                              ),
-                              if (item['notes'] != null &&
-                                  item['notes'].isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 4.0),
-                                  child: Text(
-                                    'Catatan: ${item['notes']}',
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontStyle: FontStyle.italic,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.remove_circle),
-                                onPressed: () {
-                                  setState(() {
-                                    if (item['quantity'] > 1) {
-                                      item['quantity'] -= 1;
-                                    } else {
-                                      cart.removeAt(index);
-                                    }
-                                  });
-                                },
-                              ),
-                              Text('${item['quantity']}'),
-                              IconButton(
-                                icon: const Icon(Icons.add_circle),
-                                onPressed: () {
-                                  setState(() {
-                                    item['quantity'] += 1;
-                                  });
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.note_add,
-                                    color: Colors.grey),
-                                onPressed: () {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      TextEditingController notesController =
-                                          TextEditingController(
-                                        text: item['notes'],
-                                      );
-                                      return AlertDialog(
-                                        title: const Text('Tambah Catatan'),
-                                        content: TextField(
-                                          controller: notesController,
-                                          decoration: const InputDecoration(
-                                            hintText: 'Masukkan catatan',
-                                          ),
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Batal'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () {
-                                              setState(() {
-                                                item['notes'] =
-                                                    notesController.text;
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                            child: const Text('Simpan'),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                  const Divider(),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text(
-                        'Total:',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Rp ${getTotalPrice().toStringAsFixed(0)}',
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => PaymentPage(
-                            cart: cart, // Kirim data pesanan
-                            totalPrice: getTotalPrice(), // Kirim total harga
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text('Lanjut ke Pembayaran'),
-                  ),
-                ],
+              child: OrderDetails(
+                cart: cart,
+                totalPrice: getTotalPrice(),
+                onUpdateQuantity: (index, quantity) {
+                  setState(() {
+                    if (quantity > 0) {
+                      cart[index]['quantity'] = quantity;
+                    } else {
+                      cart.removeAt(index);
+                    }
+                  });
+                },
+                onRemoveItem: (index) {
+                  setState(() {
+                    cart.removeAt(index);
+                  });
+                },
+                onAddNotes: (index, notes) {
+                  setState(() {
+                    cart[index]['notes'] = notes;
+                  });
+                },
               ),
             ),
           ),

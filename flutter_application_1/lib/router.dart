@@ -23,17 +23,15 @@ final GoRouter router = GoRouter(
     ),
     GoRoute(
       path: '/dashboard_kasir',
-      builder: (context, state) => const MainPage(),
+      builder: (context, state) => const KasirDashboard(),
     ),
     GoRoute(
       path: '/payment',
       builder: (context, state) {
-        final cart = state.extra as List<Map<String, dynamic>>;
-        final totalPrice =
-            double.parse(state.uri.queryParameters['totalPrice'] ?? '0.0');
+        final args = state.extra as Map<String, dynamic>;
         return PaymentPage(
-          cart: cart,
-          totalPrice: totalPrice,
+          cart: args['cart'],
+          totalPrice: args['totalPrice'],
         );
       },
     ),
