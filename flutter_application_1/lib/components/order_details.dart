@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:coffee_shop_kasir/pages/payment_page.dart';
+// import 'package:coffee_shop_kasir/pages/payment_page.dart';
 
 class OrderDetails extends StatelessWidget {
   final List<Map<String, dynamic>> cart;
@@ -7,6 +7,7 @@ class OrderDetails extends StatelessWidget {
   final void Function(int index, int quantity) onUpdateQuantity;
   final void Function(int index) onRemoveItem;
   final void Function(int index, String notes) onAddNotes;
+  final VoidCallback onProceedToPayment; // Parameter tambahan
 
   const OrderDetails({
     Key? key,
@@ -15,6 +16,7 @@ class OrderDetails extends StatelessWidget {
     required this.onUpdateQuantity,
     required this.onRemoveItem,
     required this.onAddNotes,
+    required this.onProceedToPayment, // Pastikan parameter baru ini ada
   }) : super(key: key);
 
   @override
@@ -134,18 +136,7 @@ class OrderDetails extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: () {
-            // Navigasi ke halaman PaymentPage
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PaymentPage(
-                  cart: cart,
-                  totalPrice: totalPrice,
-                ),
-              ),
-            );
-          },
+          onPressed: onProceedToPayment, // Gunakan parameter baru
           child: const Text('Lanjut ke Pembayaran'),
         ),
       ],

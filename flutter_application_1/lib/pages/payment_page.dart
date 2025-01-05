@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PaymentPage extends StatefulWidget {
-  final List<Map<String, dynamic>> cart; // Data pesanan saat ini
+  final List<Map<String, dynamic>> cart;
   final double totalPrice;
 
   const PaymentPage({required this.cart, required this.totalPrice, Key? key})
@@ -40,6 +40,28 @@ class _PaymentPageState extends State<PaymentPage> {
         SnackBar(content: Text('Error menyimpan data: $e')),
       );
     }
+  }
+
+  void _handlePaymentCompletion(BuildContext context) async {
+    await saveToFirebase(); // Simpan data ke Firebase
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Pembayaran Berhasil'),
+        content: Text(
+            'Anda telah membayar menggunakan metode: $selectedPaymentMethod'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+              Navigator.pop(context,
+                  true); // Kembali ke dashboard dengan indikator refresh
+            },
+            child: const Text('Kembali ke Dashboard'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -163,26 +185,7 @@ class _PaymentPageState extends State<PaymentPage> {
               ),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () async {
-                  await saveToFirebase();
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Pembayaran Berhasil'),
-                      content: Text(
-                          'Anda telah membayar menggunakan metode: $selectedPaymentMethod'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context); // Tutup dialog
-                            Navigator.pop(context); // Kembali ke dashboard
-                          },
-                          child: const Text('Kembali ke Dashboard'),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                onPressed: () => _handlePaymentCompletion(context),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   backgroundColor: Colors.orange.shade700,

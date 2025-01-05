@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:coffee_shop_kasir/components/order_details.dart';
+import 'package:coffee_shop_kasir/components/category_selector.dart';
+import 'package:coffee_shop_kasir/components/menu_grid.dart';
+import 'package:coffee_shop_kasir/pages/payment_page.dart';
 import 'package:coffee_shop_kasir/services/database_service.dart';
 import '../models/product.dart';
 import 'package:go_router/go_router.dart';
@@ -8,10 +11,10 @@ class KasirDashboard extends StatefulWidget {
   const KasirDashboard({super.key});
 
   @override
-  State<KasirDashboard> createState() => _CashierDashboardState();
+  State<KasirDashboard> createState() => _KasirDashboardState();
 }
 
-class _CashierDashboardState extends State<KasirDashboard> {
+class _KasirDashboardState extends State<KasirDashboard> {
   List<String> category = ['coffee', 'non-coffee', 'food', 'snack'];
   List<menus> products = [];
   List<menus> filteredProducts = [];
@@ -19,6 +22,8 @@ class _CashierDashboardState extends State<KasirDashboard> {
 
   final List<Map<String, dynamic>> cart = [];
   final DatabaseService _databaseService = DatabaseService();
+
+  Map<String, menus> bestSellers = {}; // Menyimpan best seller per kategori
 
   @override
   void initState() {
@@ -31,10 +36,21 @@ class _CashierDashboardState extends State<KasirDashboard> {
       final querySnapshot = await _databaseService.getMenus();
       setState(() {
         products = querySnapshot;
+        _calculateBestSellers(); // Kalkulasi best seller
         filteredProducts = products;
       });
     } catch (e) {
       print("Error fetching menus: $e");
+    }
+  }
+
+  void _calculateBestSellers() {
+    for (String cat in category) {
+      final filtered = products.where((menu) => menu.category == cat).toList();
+      if (filtered.isNotEmpty) {
+        filtered.sort((a, b) => b.sales.compareTo(a.sales));
+        bestSellers[cat] = filtered.first;
+      }
     }
   }
 
@@ -53,6 +69,23 @@ class _CashierDashboardState extends State<KasirDashboard> {
     GoRouter.of(context).go('/login');
   }
 
+  void _goToPaymentPage(BuildContext context) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) =>
+            PaymentPage(cart: cart, totalPrice: getTotalPrice()),
+      ),
+    );
+
+    if (result == true) {
+      _fetchMenus(); // Refresh data
+      setState(() {
+        cart.clear(); // Kosongkan detail pesanan
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,32 +99,19 @@ class _CashierDashboardState extends State<KasirDashboard> {
         ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(70),
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: category.map((cat) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: ChoiceChip(
-                      label: Text(cat),
-                      selected: selectedCategory == cat,
-                      onSelected: (selected) {
-                        setState(() {
-                          selectedCategory = selected ? cat : 'All';
-                          filteredProducts = selectedCategory == 'All'
-                              ? products
-                              : products
-                                  .where((product) => product.category == cat)
-                                  .toList();
-                        });
-                      },
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
+          child: CategorySelector(
+            categories: category,
+            selectedCategory: selectedCategory,
+            onCategorySelected: (cat) {
+              setState(() {
+                selectedCategory = cat;
+                filteredProducts = selectedCategory == 'All'
+                    ? products
+                    : products
+                        .where((product) => product.category == cat)
+                        .toList();
+              });
+            },
           ),
         ),
       ),
@@ -101,78 +121,10 @@ class _CashierDashboardState extends State<KasirDashboard> {
             flex: 3,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: GridView.builder(
-                itemCount: filteredProducts.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.8,
-                ),
-                itemBuilder: (context, index) {
-                  final product = filteredProducts[index];
-                  return Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(10)),
-                            child: Image.network(
-                              product.imageUrl,
-                              width: double.infinity,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Icon(Icons.error, color: Colors.red),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                product.name,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 16),
-                              ),
-                              Text(
-                                product.description,
-                                style: const TextStyle(fontSize: 12),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Rp ${product.price}',
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.orange),
-                              ),
-                              const SizedBox(height: 8),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  icon: const Icon(Icons.add_circle,
-                                      color: Colors.orange),
-                                  onPressed: () => addToCart(product),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+              child: MenuGrid(
+                filteredProducts: filteredProducts,
+                bestSellers: bestSellers,
+                onAddToCart: addToCart,
               ),
             ),
           ),
@@ -203,6 +155,7 @@ class _CashierDashboardState extends State<KasirDashboard> {
                     cart[index]['notes'] = notes;
                   });
                 },
+                onProceedToPayment: () => _goToPaymentPage(context),
               ),
             ),
           ),

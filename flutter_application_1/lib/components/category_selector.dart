@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CategorySelector extends StatelessWidget {
   final List<String> categories;
   final String selectedCategory;
-  final void Function(String) onCategorySelected;
+  final Function(String category) onCategorySelected;
 
   const CategorySelector({
     Key? key,
@@ -17,16 +17,14 @@ class CategorySelector extends StatelessWidget {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: Row(
-        children: categories.map((category) {
+        children: categories.map((cat) {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: ChoiceChip(
-              label: Text(category),
-              selected: selectedCategory == category,
+              label: Text(cat),
+              selected: selectedCategory == cat,
               onSelected: (selected) {
-                if (selected) {
-                  onCategorySelected(category);
-                }
+                onCategorySelected(selected ? cat : 'All');
               },
             ),
           );

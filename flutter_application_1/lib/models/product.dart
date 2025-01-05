@@ -8,6 +8,7 @@ class menus {
   final String imageUrl;
   final String category;
   final String filter;
+  final int sales;
 
   // Constructor
   menus({
@@ -18,11 +19,12 @@ class menus {
     required this.imageUrl,
     required this.category,
     required this.filter,
+    required this.sales,
   });
 
   // Menyimpan data dari Firestore ke dalam objek Menu
   factory menus.fromFirestore(DocumentSnapshot doc) {
-    Map data = doc.data() as Map; // Mendapatkan data dari document
+    Map data = doc.data() as Map;
     return menus(
       id: doc.id,
       name: data['name'] ?? '',
@@ -31,6 +33,7 @@ class menus {
       imageUrl: data['imageUrl'] ?? '',
       category: data['category'] ?? '',
       filter: data['filter'] ?? '',
+      sales: data['sales'] ?? 0, // Default ke 0 jika data tidak tersedia
     );
   }
 
@@ -43,6 +46,7 @@ class menus {
       'imageUrl': imageUrl,
       'category': category,
       'filter': filter,
+      'sales': sales,
     };
   }
 }
