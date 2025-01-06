@@ -13,7 +13,7 @@ class PaymentPage extends StatefulWidget {
 }
 
 class _PaymentPageState extends State<PaymentPage> {
-  String selectedPaymentMethod = 'cash'; // Default payment method
+  String selectedPaymentMethod = 'cash';
 
   Future<void> saveToFirebase() async {
     try {
@@ -47,17 +47,24 @@ class _PaymentPageState extends State<PaymentPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Pembayaran Berhasil'),
+        title: const Text(
+          'Pembayaran Berhasil',
+          style: TextStyle(color: Color(0xFF674636)),
+        ),
         content: Text(
-            'Anda telah membayar menggunakan metode: $selectedPaymentMethod'),
+          'Anda telah membayar menggunakan metode: $selectedPaymentMethod',
+          style: const TextStyle(color: Color(0xFF674636)),
+        ),
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // Tutup dialog
-              Navigator.pop(context,
-                  true); // Kembali ke dashboard dengan indikator refresh
+              Navigator.pop(context);
+              Navigator.pop(context, true);
             },
-            child: const Text('Kembali ke Dashboard'),
+            child: const Text(
+              'Kembali ke Dashboard',
+              style: TextStyle(color: Color(0xFFAAB396)),
+            ),
           ),
         ],
       ),
@@ -70,12 +77,15 @@ class _PaymentPageState extends State<PaymentPage> {
       appBar: AppBar(
         title: const Text('Pembayaran'),
         centerTitle: true,
-        backgroundColor: Colors.orange.shade800,
+        backgroundColor: const Color(0xFF674636),
       ),
       body: Container(
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orange.shade300, Colors.orange.shade800],
+            colors: [
+              Color(0xFFF7EED3),
+              Color(0xFFF5F5DC),
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -90,7 +100,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF674636),
                 ),
               ),
               const SizedBox(height: 16),
@@ -105,9 +115,10 @@ class _PaymentPageState extends State<PaymentPage> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       elevation: 3,
+                      color: const Color(0xFFF7EED3),
                       child: ListTile(
                         leading: CircleAvatar(
-                          backgroundColor: Colors.orange.shade200,
+                          backgroundColor: const Color(0xFFAAB396),
                           child: Text(
                             '${item['quantity']}x',
                             style: const TextStyle(
@@ -118,17 +129,21 @@ class _PaymentPageState extends State<PaymentPage> {
                         ),
                         title: Text(
                           item['product'].name,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF674636),
+                          ),
                         ),
                         subtitle: Text(
                           'Rp ${(item['product'].price * item['quantity']).toStringAsFixed(0)}',
+                          style: const TextStyle(color: Color(0xFFAAB396)),
                         ),
                       ),
                     );
                   },
                 ),
               ),
-              const Divider(color: Colors.white),
+              const Divider(color: Color(0xFFAAB396)),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -137,7 +152,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF674636),
                     ),
                   ),
                   Text(
@@ -145,7 +160,7 @@ class _PaymentPageState extends State<PaymentPage> {
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFFAAB396),
                     ),
                   ),
                 ],
@@ -156,7 +171,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Color(0xFF674636),
                 ),
               ),
               const SizedBox(height: 8),
@@ -188,7 +203,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 onPressed: () => _handlePaymentCompletion(context),
                 style: ElevatedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(vertical: 12),
-                  backgroundColor: Colors.orange.shade700,
+                  backgroundColor: const Color(0xFFAAB396),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -196,7 +211,10 @@ class _PaymentPageState extends State<PaymentPage> {
                 child: const Center(
                   child: Text(
                     'Bayar Sekarang',
-                    style: TextStyle(fontSize: 18, color: Colors.white),
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),

@@ -65,7 +65,8 @@ class MenuGrid extends StatelessWidget {
                         ),
                         Text(
                           product.description,
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(
+                              fontSize: 12, color: Color(0xFF674636)),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -73,14 +74,14 @@ class MenuGrid extends StatelessWidget {
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 14,
-                              color: Colors.orange),
+                              color: Color(0xFFAAB396)),
                         ),
                         const SizedBox(height: 8),
                         Align(
                           alignment: Alignment.centerRight,
                           child: IconButton(
                             icon: const Icon(Icons.add_circle,
-                                color: Colors.orange),
+                                color: Color(0xFFAAB396)),
                             onPressed: () => onAddToCart(product),
                           ),
                         ),
@@ -98,7 +99,7 @@ class MenuGrid extends StatelessWidget {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.orange,
+                    color: const Color(0xFF674636),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(

@@ -94,13 +94,14 @@ class _AdminDashboardState extends State<AdminDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Myth Cafe'),
+        backgroundColor: const Color(0xFFAAB396),
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout, color: Color(0xFF674636)),
             onPressed: () => logout(context),
           ),
           IconButton(
-            icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add, color: Color(0xFF674636)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -111,7 +112,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.edit),
+            icon: const Icon(Icons.edit, color: Color(0xFF674636)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -125,7 +126,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.delete),
+            icon: const Icon(Icons.delete, color: Color(0xFF674636)),
             onPressed: () {
               Navigator.push(
                 context,
@@ -157,51 +158,54 @@ class _AdminDashboardState extends State<AdminDashboard> {
           ),
         ),
       ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: MenuGrid(
-                filteredProducts: filteredProducts,
-                bestSellers: bestSellers,
-                onAddToCart: addToCart,
+      body: Container(
+        color: const Color(0xFFF7EED3),
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: MenuGrid(
+                  filteredProducts: filteredProducts,
+                  bestSellers: bestSellers,
+                  onAddToCart: addToCart,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.orange[50],
-              child: OrderDetails(
-                cart: cart,
-                totalPrice: getTotalPrice(),
-                onUpdateQuantity: (index, quantity) {
-                  setState(() {
-                    if (quantity > 0) {
-                      cart[index]['quantity'] = quantity;
-                    } else {
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                color: const Color(0xFFFFF8E8),
+                child: OrderDetails(
+                  cart: cart,
+                  totalPrice: getTotalPrice(),
+                  onUpdateQuantity: (index, quantity) {
+                    setState(() {
+                      if (quantity > 0) {
+                        cart[index]['quantity'] = quantity;
+                      } else {
+                        cart.removeAt(index);
+                      }
+                    });
+                  },
+                  onRemoveItem: (index) {
+                    setState(() {
                       cart.removeAt(index);
-                    }
-                  });
-                },
-                onRemoveItem: (index) {
-                  setState(() {
-                    cart.removeAt(index);
-                  });
-                },
-                onAddNotes: (index, notes) {
-                  setState(() {
-                    cart[index]['notes'] = notes;
-                  });
-                },
-                onProceedToPayment: () => _goToPaymentPage(context),
+                    });
+                  },
+                  onAddNotes: (index, notes) {
+                    setState(() {
+                      cart[index]['notes'] = notes;
+                    });
+                  },
+                  onProceedToPayment: () => _goToPaymentPage(context),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -14,30 +14,65 @@ class UpdatePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Menu'),
+        backgroundColor: const Color(0xFF674636), // Warna latar AppBar
       ),
-      body: ListView.builder(
-        itemCount: products.length,
-        itemBuilder: (context, index) {
-          final menu = products[index];
-          return ListTile(
-            title: Text(menu.name),
-            subtitle: Text('Rp ${menu.price}'),
-            trailing: IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => UpdateForm(
-                      menu: menu,
-                      onMenuUpdated: onMenuUpdated,
-                    ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFF7EED3), // Gradasi atas
+              Color(0xFFF5F5DC), // Gradasi bawah
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: ListView.builder(
+          itemCount: products.length,
+          itemBuilder: (context, index) {
+            final menu = products[index];
+            return Card(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              elevation: 3,
+              color: const Color(0xFFF7EED3), // Warna latar belakang kartu
+              child: ListTile(
+                title: Text(
+                  menu.name,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF674636), // Warna teks
                   ),
-                );
-              },
-            ),
-          );
-        },
+                ),
+                subtitle: Text(
+                  'Rp ${menu.price}',
+                  style: const TextStyle(
+                    color: Color(0xFFAAB396), // Warna subtitle
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.edit,
+                    color: Color(0xFF674636), // Warna ikon
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => UpdateForm(
+                          menu: menu,
+                          onMenuUpdated: onMenuUpdated,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -47,8 +82,11 @@ class UpdateForm extends StatelessWidget {
   final menus menu;
   final VoidCallback onMenuUpdated;
 
-  const UpdateForm(
-      {super.key, required this.menu, required this.onMenuUpdated});
+  const UpdateForm({
+    super.key,
+    required this.menu,
+    required this.onMenuUpdated,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,33 +103,74 @@ class UpdateForm extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Update Menu'),
+        backgroundColor: const Color(0xFF674636), // Warna AppBar
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
+      body: Container(
+        width: double.infinity,
+        height: double.infinity, // Pastikan kontainer mencakup seluruh layar
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0xFFF7EED3), // Gradasi atas
+              Color(0xFFF5F5DC), // Gradasi bawah
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
         child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Nama Menu'),
+                decoration: const InputDecoration(
+                  labelText: 'Nama Menu',
+                  filled: true,
+                  fillColor: Color(0xFFF7EED3), // Warna field
+                  border: OutlineInputBorder(),
+                ),
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Deskripsi Menu'),
+                decoration: const InputDecoration(
+                  labelText: 'Deskripsi Menu',
+                  filled: true,
+                  fillColor: Color(0xFFF7EED3),
+                  border: OutlineInputBorder(),
+                ),
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: priceController,
-                decoration: const InputDecoration(labelText: 'Harga Menu'),
+                decoration: const InputDecoration(
+                  labelText: 'Harga Menu',
+                  filled: true,
+                  fillColor: Color(0xFFF7EED3),
+                  border: OutlineInputBorder(),
+                ),
                 keyboardType: TextInputType.number,
               ),
+              const SizedBox(height: 16),
               TextField(
                 controller: imageUrlController,
-                decoration: const InputDecoration(labelText: 'URL Gambar Menu'),
+                decoration: const InputDecoration(
+                  labelText: 'URL Gambar Menu',
+                  filled: true,
+                  fillColor: Color(0xFFF7EED3),
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 value: selectedCategory,
-                decoration: const InputDecoration(labelText: 'Kategori'),
+                decoration: const InputDecoration(
+                  labelText: 'Kategori',
+                  filled: true,
+                  fillColor: Color(0xFFF7EED3),
+                  border: OutlineInputBorder(),
+                ),
                 items: const [
                   DropdownMenuItem(value: 'coffee', child: Text('Coffee')),
                   DropdownMenuItem(
@@ -125,7 +204,18 @@ class UpdateForm extends StatelessWidget {
                     Navigator.pop(context);
                   }
                 },
-                child: const Text('Update'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFAAB396), // Warna tombol
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text(
+                  'Update',
+                  style: TextStyle(color: Colors.white), // Warna teks tombol
+                ),
               ),
             ],
           ),

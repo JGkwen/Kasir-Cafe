@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:go_router/go_router.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -42,9 +42,9 @@ class _LoginPageState extends State<LoginPage> {
       String role = userData['role'];
 
       if (role == 'admin') {
-        context.go('/dashboard_admin'); // Navigate to Admin Dashboard
+        context.go('/dashboard_admin');
       } else if (role == 'kasir') {
-        context.go('/dashboard_kasir'); // Navigate to Kasir Dashboard
+        context.go('/dashboard_kasir');
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Role tidak dikenali')),
@@ -61,17 +61,11 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [Colors.orange.shade300, Colors.orange.shade800],
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-          ),
-        ),
+        color: const Color(0xFFF7EED3),
         child: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -80,56 +74,63 @@ class _LoginPageState extends State<LoginPage> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF674636),
                     ),
                   ),
                   const SizedBox(height: 24),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(16.0),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.1),
-                          blurRadius: 10,
+                          blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
                       ],
                     ),
                     child: Column(
                       children: [
-                        const SizedBox(height: 16),
                         TextField(
                           controller: emailController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             labelText: 'Email',
-                            border: OutlineInputBorder(),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
                         TextField(
                           controller: passwordController,
-                          decoration: const InputDecoration(
-                            labelText: 'Password',
-                            border: OutlineInputBorder(),
-                          ),
                           obscureText: true,
+                          decoration: InputDecoration(
+                            labelText: 'Password',
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
                         ),
                         const SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: loginUser,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange.shade600,
+                            backgroundColor: const Color(0xFFAAB396),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 24),
+                            padding: const EdgeInsets.symmetric(vertical: 12),
                           ),
-                          child: const Text(
-                            'Login',
-                            style: TextStyle(fontSize: 18),
+                          child: const Center(
+                            child: Text(
+                              'Login',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                              ),
+                            ),
                           ),
                         ),
                       ],
@@ -142,7 +143,10 @@ class _LoginPageState extends State<LoginPage> {
                     },
                     child: const Text(
                       'Belum punya akun? Daftar di sini',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        color: Color(0xFF674636),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

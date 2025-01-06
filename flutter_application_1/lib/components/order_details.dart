@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// import 'package:coffee_shop_kasir/pages/payment_page.dart';
 
 class OrderDetails extends StatelessWidget {
   final List<Map<String, dynamic>> cart;
@@ -7,7 +6,7 @@ class OrderDetails extends StatelessWidget {
   final void Function(int index, int quantity) onUpdateQuantity;
   final void Function(int index) onRemoveItem;
   final void Function(int index, String notes) onAddNotes;
-  final VoidCallback onProceedToPayment; // Parameter tambahan
+  final VoidCallback onProceedToPayment;
 
   const OrderDetails({
     Key? key,
@@ -16,7 +15,7 @@ class OrderDetails extends StatelessWidget {
     required this.onUpdateQuantity,
     required this.onRemoveItem,
     required this.onAddNotes,
-    required this.onProceedToPayment, // Pastikan parameter baru ini ada
+    required this.onProceedToPayment,
   }) : super(key: key);
 
   @override
@@ -26,7 +25,11 @@ class OrderDetails extends StatelessWidget {
       children: [
         const Text(
           'Detail Pesanan',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF674636),
+          ),
         ),
         const SizedBox(height: 16),
         Expanded(
@@ -38,10 +41,18 @@ class OrderDetails extends StatelessWidget {
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(item['product'].name),
+                    Text(
+                      item['product'].name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF674636),
+                      ),
+                    ),
                     Text(
                       'Rp ${item['product'].price}',
-                      style: const TextStyle(color: Colors.grey),
+                      style: const TextStyle(
+                        color: Color(0xFFAAB396),
+                      ),
                     ),
                     if (item['notes'] != null && item['notes'].isNotEmpty)
                       Padding(
@@ -61,20 +72,34 @@ class OrderDetails extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.remove_circle),
+                      icon: const Icon(
+                        Icons.remove_circle,
+                        color: Color(0xFFAAB396),
+                      ),
                       onPressed: () {
                         onUpdateQuantity(index, item['quantity'] - 1);
                       },
                     ),
-                    Text('${item['quantity']}'),
+                    Text(
+                      '${item['quantity']}',
+                      style: const TextStyle(
+                        color: Color(0xFF674636),
+                      ),
+                    ),
                     IconButton(
-                      icon: const Icon(Icons.add_circle),
+                      icon: const Icon(
+                        Icons.add_circle,
+                        color: Color(0xFFAAB396),
+                      ),
                       onPressed: () {
                         onUpdateQuantity(index, item['quantity'] + 1);
                       },
                     ),
                     IconButton(
-                      icon: const Icon(Icons.note_add),
+                      icon: const Icon(
+                        Icons.note_add,
+                        color: Color(0xFF674636),
+                      ),
                       onPressed: () {
                         showDialog(
                           context: context,
@@ -84,7 +109,10 @@ class OrderDetails extends StatelessWidget {
                               text: item['notes'],
                             );
                             return AlertDialog(
-                              title: const Text('Tambah Catatan'),
+                              title: const Text(
+                                'Tambah Catatan',
+                                style: TextStyle(color: Color(0xFF674636)),
+                              ),
                               content: TextField(
                                 controller: notesController,
                                 decoration: const InputDecoration(
@@ -96,14 +124,20 @@ class OrderDetails extends StatelessWidget {
                                   onPressed: () {
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Batal'),
+                                  child: const Text(
+                                    'Batal',
+                                    style: TextStyle(color: Color(0xFFAAB396)),
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () {
                                     onAddNotes(index, notesController.text);
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Simpan'),
+                                  child: const Text(
+                                    'Simpan',
+                                    style: TextStyle(color: Color(0xFFAAB396)),
+                                  ),
                                 ),
                               ],
                             );
@@ -117,7 +151,7 @@ class OrderDetails extends StatelessWidget {
             },
           ),
         ),
-        const Divider(),
+        const Divider(color: Color(0xFFAAB396)),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -126,18 +160,38 @@ class OrderDetails extends StatelessWidget {
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
+                color: Color(0xFF674636),
               ),
             ),
             Text(
               'Rp ${totalPrice.toStringAsFixed(0)}',
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFAAB396),
+              ),
             ),
           ],
         ),
         const SizedBox(height: 16),
         ElevatedButton(
-          onPressed: onProceedToPayment, // Gunakan parameter baru
-          child: const Text('Lanjut ke Pembayaran'),
+          onPressed: onProceedToPayment,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFFAAB396),
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+          child: const Center(
+            child: Text(
+              'Lanjut ke Pembayaran',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.white,
+              ),
+            ),
+          ),
         ),
       ],
     );

@@ -53,9 +53,14 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Colors.orange.shade300, Colors.orange.shade800],
+            colors: [
+              Color(0xFFF7EED3), // Gradasi atas
+              Color(0xFFF5F5DC), // Gradasi bawah
+            ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -73,7 +78,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Color(0xFF674636), // Warna teks
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -81,7 +86,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: const Color(0xFFFFFFFF), // Warna putih untuk form
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
@@ -98,6 +103,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: nameController,
                           decoration: const InputDecoration(
                             labelText: 'Nama',
+                            filled: true,
+                            fillColor: Color(0xFFF7EED3),
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -106,6 +113,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: emailController,
                           decoration: const InputDecoration(
                             labelText: 'Email',
+                            filled: true,
+                            fillColor: Color(0xFFF7EED3),
                             border: OutlineInputBorder(),
                           ),
                         ),
@@ -114,6 +123,8 @@ class _RegisterPageState extends State<RegisterPage> {
                           controller: passwordController,
                           decoration: const InputDecoration(
                             labelText: 'Password',
+                            filled: true,
+                            fillColor: Color(0xFFF7EED3),
                             border: OutlineInputBorder(),
                           ),
                           obscureText: true,
@@ -123,13 +134,19 @@ class _RegisterPageState extends State<RegisterPage> {
                           value: selectedRole,
                           decoration: const InputDecoration(
                             labelText: 'Role',
+                            filled: true,
+                            fillColor: Color(0xFFF7EED3),
                             border: OutlineInputBorder(),
                           ),
                           items: const [
                             DropdownMenuItem(
-                                value: 'admin', child: Text('Admin')),
+                              value: 'admin',
+                              child: Text('Admin'),
+                            ),
                             DropdownMenuItem(
-                                value: 'kasir', child: Text('Kasir')),
+                              value: 'kasir',
+                              child: Text('Kasir'),
+                            ),
                           ],
                           onChanged: (value) {
                             setState(() {
@@ -141,16 +158,21 @@ class _RegisterPageState extends State<RegisterPage> {
                         ElevatedButton(
                           onPressed: registerUser,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.orange.shade600,
+                            backgroundColor: const Color(0xFFAAB396),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
                             padding: const EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 24),
+                              vertical: 12,
+                              horizontal: 24,
+                            ),
                           ),
                           child: const Text(
                             'Register',
-                            style: TextStyle(fontSize: 18),
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.white,
+                            ),
                           ),
                         ),
                         const SizedBox(height: 16),
@@ -166,7 +188,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                     child: const Text(
                       'Sudah punya akun? Login di sini',
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(color: Color(0xFF674636)),
                     ),
                   ),
                 ],

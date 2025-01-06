@@ -91,9 +91,11 @@ class _KasirDashboardState extends State<KasirDashboard> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Myth Cafe - Kasir'),
+        backgroundColor: const Color(0xFFAAB396), // Warna AppBar
         actions: [
           IconButton(
-            icon: const Icon(Icons.logout),
+            icon: const Icon(Icons.logout,
+                color: Color(0xFF674636)), // Warna ikon logout
             onPressed: () => logout(context),
           ),
         ],
@@ -115,51 +117,54 @@ class _KasirDashboardState extends State<KasirDashboard> {
           ),
         ),
       ),
-      body: Row(
-        children: [
-          Expanded(
-            flex: 3,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: MenuGrid(
-                filteredProducts: filteredProducts,
-                bestSellers: bestSellers,
-                onAddToCart: addToCart,
+      body: Container(
+        color: const Color(0xFFF7EED3), // Latar belakang utama
+        child: Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: MenuGrid(
+                  filteredProducts: filteredProducts,
+                  bestSellers: bestSellers,
+                  onAddToCart: addToCart,
+                ),
               ),
             ),
-          ),
-          Expanded(
-            flex: 2,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              color: Colors.orange[50],
-              child: OrderDetails(
-                cart: cart,
-                totalPrice: getTotalPrice(),
-                onUpdateQuantity: (index, quantity) {
-                  setState(() {
-                    if (quantity > 0) {
-                      cart[index]['quantity'] = quantity;
-                    } else {
+            Expanded(
+              flex: 2,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                color: const Color(0xFFFFF8E8), // Latar belakang OrderDetails
+                child: OrderDetails(
+                  cart: cart,
+                  totalPrice: getTotalPrice(),
+                  onUpdateQuantity: (index, quantity) {
+                    setState(() {
+                      if (quantity > 0) {
+                        cart[index]['quantity'] = quantity;
+                      } else {
+                        cart.removeAt(index);
+                      }
+                    });
+                  },
+                  onRemoveItem: (index) {
+                    setState(() {
                       cart.removeAt(index);
-                    }
-                  });
-                },
-                onRemoveItem: (index) {
-                  setState(() {
-                    cart.removeAt(index);
-                  });
-                },
-                onAddNotes: (index, notes) {
-                  setState(() {
-                    cart[index]['notes'] = notes;
-                  });
-                },
-                onProceedToPayment: () => _goToPaymentPage(context),
+                    });
+                  },
+                  onAddNotes: (index, notes) {
+                    setState(() {
+                      cart[index]['notes'] = notes;
+                    });
+                  },
+                  onProceedToPayment: () => _goToPaymentPage(context),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

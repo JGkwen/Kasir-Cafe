@@ -14,21 +14,32 @@ class CategorySelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: categories.map((cat) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: ChoiceChip(
-              label: Text(cat),
-              selected: selectedCategory == cat,
-              onSelected: (selected) {
-                onCategorySelected(selected ? cat : 'All');
-              },
-            ),
-          );
-        }).toList(),
+    return Container(
+      height: 80,
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: categories.map((cat) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: ChoiceChip(
+                label: Text(
+                  cat,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                selected: selectedCategory == cat,
+                selectedColor: const Color(0xFFAAB396),
+                onSelected: (selected) {
+                  onCategorySelected(selected ? cat : 'All');
+                },
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }
